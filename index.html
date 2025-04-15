@@ -1,20 +1,128 @@
 <!DOCTYPE html>
-<html>
+<html lang="tr">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Üretim Sayacı</title>
+  
+  <!-- Google Fonts - Şık ve okunabilir bir font -->
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+
+  <style>
+    body {
+      font-family: 'Roboto', sans-serif;
+      background-color: #f4f7fc;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .container {
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      width: 400px;
+      text-align: center;
+    }
+
+    h1 {
+      font-size: 2rem;
+      color: #333;
+      margin-bottom: 20px;
+    }
+
+    h2 {
+      font-size: 1.5rem;
+      color: #555;
+    }
+
+    .count-display {
+      background: #e9ecef;
+      padding: 20px;
+      border-radius: 10px;
+      margin: 20px 0;
+      font-size: 2rem;
+      color: #333;
+    }
+
+    .buttons {
+      margin-top: 30px;
+    }
+
+    button {
+      background-color: #4caf50;
+      color: white;
+      border: none;
+      padding: 12px 20px;
+      font-size: 1.2rem;
+      margin: 5px;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #45a049;
+    }
+
+    input {
+      padding: 10px;
+      margin: 10px 0;
+      border: 2px solid #ccc;
+      border-radius: 5px;
+      font-size: 1rem;
+      width: 100%;
+    }
+
+    .error-message {
+      color: red;
+      font-size: 1rem;
+    }
+
+    .footer {
+      margin-top: 30px;
+      font-size: 0.9rem;
+      color: #777;
+    }
+  </style>
 </head>
 <body>
-  <h1>Üretim Sayacı</h1>
 
-  <!-- Üretim Sayısı ve Hedef Sayısı -->
-  <h2>Üretim Sayısı: <span id="uretim">Yükleniyor...</span></h2>
-  <h2>Hedef Sayısı: <span id="hedef">Yükleniyor...</span></h2>
+  <div class="container">
+    <h1>Üretim Sayacı</h1>
+
+    <!-- Üretim Sayısı ve Hedef Sayısı -->
+    <div class="count-display">
+      <h2>Üretim Sayısı: <span id="uretim">Yükleniyor...</span></h2>
+      <h2>Hedef Sayısı: <span id="hedef">Yükleniyor...</span></h2>
+    </div>
+
+    <!-- Firebase ve JS -->
+    <div class="buttons">
+      <button id="artir">+</button>
+      <button id="azalt">-</button>
+    </div>
+
+    <!-- Manuel Güncelleme Alanı -->
+    <input type="number" id="manualInput" placeholder="Yeni üretim sayısı gir">
+    <button id="guncelle">Güncelle</button>
+
+    <div class="error-message" id="error-message"></div>
+
+    <!-- Footer -->
+    <div class="footer">
+      <p>Üretim sayacı - 2025 &copy; ArmTek</p>
+    </div>
+  </div>
 
   <!-- Firebase ve JS -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-    import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
+    import { getDatabase, ref, onValue, set } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
 
     // Firebase yapılandırman
     const firebaseConfig = {
@@ -33,16 +141,39 @@
     const sayiRef = ref(db, 'uretimSayisi');
     const hedefRef = ref(db, 'hedefSayisi');
 
-    // Firebase verilerini al ve sayfada göster
+    let currentValue = 0;
+
+    // Firebase verisini al ve sayfada göster
     onValue(sayiRef, (snapshot) => {
       const sayi = snapshot.val();
       document.getElementById('uretim').textContent = sayi;
+      currentValue = sayi;
     });
 
     onValue(hedefRef, (snapshot) => {
       const hedef = snapshot.val();
       document.getElementById('hedef').textContent = hedef;
     });
+
+    // Üretim sayısını artır
+    document.getElementById('artir').onclick = () => {
+      set(sayiRef, currentValue + 1);
+    };
+
+    // Üretim sayısını azalt
+    document.getElementById('azalt').onclick = () => {
+      set(sayiRef, currentValue - 1);
+    };
+
+    // Üretim sayısını manuel güncelle
+    document.getElementById('guncelle').onclick = () => {
+      const yeniSayi = parseInt(document.getElementById('manualInput').value);
+      if (!isNaN(yeniSayi)) {
+        set(sayiRef, yeniSayi);
+      } else {
+        document.getElementById('error-message').textContent = "Lütfen geçerli bir sayı girin!";
+      }
+    };
   </script>
 </body>
 </html>
