@@ -56,13 +56,13 @@
 
     .message {
       background-color: red;
-      color: white; /* Yazı rengi beyaz */
-      font-size: 2.3rem; /* Daha büyük yazı */
+      color: white;
+      font-size: 2.3rem;
       font-weight: bold;
       padding: 20px;
       border-radius: 10px;
       margin: 20px 0;
-      animation: blink 2s infinite; /* Daha yavaş yanıp sönme */
+      animation: blink 2s infinite;
     }
 
     @keyframes blink {
@@ -81,30 +81,21 @@
 <body>
 
   <div class="container">
-    <!-- Yanıp sönen mesaj -->
     <div id="message" class="message" style="display:none;">Yönetici mesajı buraya gelecek!</div>
-
-    <!-- Başlık -->
     <h1>Üretim Sayacı</h1>
-
-    <!-- Üretim ve Hedef Sayısı -->
     <div class="count-display">
       <h2>Üretim Sayısı: <span id="uretim">Yükleniyor...</span></h2>
       <h2>Hedef Sayı: <span id="hedef">Yükleniyor...</span></h2>
     </div>
-
-    <!-- Alt bilgi -->
     <div class="footer">
       <p>Üretim sayacı - 2025 &copy; Armtek Elektrik</p>
     </div>
   </div>
 
-  <!-- Firebase ve JavaScript -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
     import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
 
-    // Firebase ayarları
     const firebaseConfig = {
       apiKey: "AIzaSyDZsY5-5yHWVO7_eGT2CaJl_aLLMY9WWCY",
       authDomain: "armtek-v1.firebaseapp.com",
@@ -116,22 +107,27 @@
       measurementId: "G-VQYM0XR663"
     };
 
-    // Firebase'i başlat
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
 
-    // Veritabanı referansları
     const sayiRef = ref(db, 'uretimSayisi');
     const hedefRef = ref(db, 'hedefSayisi');
     const mesajRef = ref(db, 'mesaj');
 
-    // Üretim sayısını al
+    // Üretim sayısı değiştiğinde sesi çal
+    const playSound = () => {
+      const audio = new Audio('https://github.com/occan0606/uret-m-sayac-/raw/refs/heads/main/1.mp3');
+      audio.play();
+    };
+
+    // Üretim sayısı verisini al
     onValue(sayiRef, (snapshot) => {
       const sayi = snapshot.val();
       document.getElementById('uretim').textContent = sayi ?? "Veri Yüklenemedi";
+      playSound(); // Ses çal
     });
 
-    // Hedef sayısını al
+    // Hedef sayısı verisini al
     onValue(hedefRef, (snapshot) => {
       const hedef = snapshot.val();
       document.getElementById('hedef').textContent = hedef ?? "Veri Yüklenemedi";
