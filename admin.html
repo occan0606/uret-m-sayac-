@@ -10,6 +10,7 @@
 <body>
   <h1>Yönetici Paneli</h1>
 
+  <!-- Şifre Giriş Alanı -->
   <div id="sifreSor">
     <p>Lütfen şifreyi girin:</p>
     <input type="password" id="sifreInput" placeholder="Şifre">
@@ -17,6 +18,7 @@
     <p id="uyari" style="color:red;"></p>
   </div>
 
+  <!-- Asıl Panel (gizli başlar) -->
   <div id="panel">
     <h2>Üretim Sayısı: <span id="uretim">Yükleniyor...</span></h2>
     <button id="artir">+</button>
@@ -26,11 +28,12 @@
     <button id="guncelle">Güncelle</button>
   </div>
 
-  <!-- Firebase -->
+  <!-- Firebase ve Şifre Kontrol -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
     import { getDatabase, ref, onValue, set } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
 
+    // Firebase ayarların (senin projen)
     const firebaseConfig = {
       apiKey: "AIzaSyDZsY5-5yHWVO7_eGT2CaJl_aLLMY9WWCY",
       authDomain: "armtek-v1.firebaseapp.com",
@@ -48,9 +51,10 @@
 
     let currentValue = 0;
 
+    // Şifre kontrolü
     function kontrolEt() {
       const girilen = document.getElementById('sifreInput').value;
-      const dogruSifre = "1234"; // 🔐 Buraya kendi şifreni yaz
+      const dogruSifre = "1234"; // ← Şifren buraya (örneğin: 4321)
 
       if (girilen === dogruSifre) {
         document.getElementById('sifreSor').style.display = "none";
@@ -61,6 +65,7 @@
       }
     }
 
+    // Firebase verisini alma ve yazma
     function veriyiBaslat() {
       const uretimEl = document.getElementById('uretim');
       const input = document.getElementById('manualInput');
