@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Yönetici Paneli</title>
+</head>
+<body>
+  <h1>Yönetici Paneli</h1>
+  <h2>Üretim Sayısı: <span id="uretim">Yükleniyor...</span></h2>
+
+  <button id="artir">+</button>
+  <button id="azalt">-</button><br><br>
+
+  <input type="number" id="manualInput" placeholder="Yeni sayı gir">
+  <button id="guncelle">Güncelle</button>
+
+  <!-- Firebase -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+    import { getDatabase, ref, onValue, set } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyDZsY5-5yHWVO7_eGT2CaJl_aLLMY9WWCY",
+      authDomain: "armtek-v1.firebaseapp.com",
+      databaseURL: "https://armtek-v1-default-rtdb.firebaseio.com",
+      projectId: "armtek-v1",
+      storageBucket: "armtek-v1.firebasestorage.app",
+      messagingSenderId: "1080834554968",
+      appId: "1:1080834554968:web:a3bdd4985910fad663de2d",
+      measurementId: "G-VQYM0XR663"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+    const sayiRef = ref(db, 'uretimSayisi');
+
+    const uretimEl = document.getElementById('uretim');
+    const input = document.getElementById('manualInput');
+
+    let currentValue = 0;
+
+    onValue(sayiRef, (snapshot) => {
+      const sayi = snapshot.val();
+      currentValue = sayi;
+      uretimEl.textContent = sayi;
+    });
+
+    document.getElementById('artir').onclick = () => {
+      set(sayiRef, currentValue + 1);
+    };
+
+    document.getElementById('azalt').onclick = () => {
+      set(sayiRef, currentValue - 1);
+    };
+
+    document.getElementById('guncelle').onclick = () => {
+      const yeniSayi = parseInt(input.value);
+      if (!isNaN(yeniSayi)) {
+        set(sayiRef, yeniSayi);
+      }
+    };
+  </script>
+</body>
+</html>

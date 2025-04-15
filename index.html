@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Üretim Sayısı</title>
+</head>
+<body>
+  <h1>Üretim Sayısı:</h1>
+  <h2 id="uretim">Yükleniyor...</h2>
+
+  <!-- Firebase -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+    import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyDZsY5-5yHWVO7_eGT2CaJl_aLLMY9WWCY",
+      authDomain: "armtek-v1.firebaseapp.com",
+      databaseURL: "https://armtek-v1-default-rtdb.firebaseio.com",
+      projectId: "armtek-v1",
+      storageBucket: "armtek-v1.firebasestorage.app",
+      messagingSenderId: "1080834554968",
+      appId: "1:1080834554968:web:a3bdd4985910fad663de2d",
+      measurementId: "G-VQYM0XR663"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    const sayiRef = ref(db, 'uretimSayisi');
+    const uretimEl = document.getElementById('uretim');
+
+    onValue(sayiRef, (snapshot) => {
+      const sayi = snapshot.val();
+      uretimEl.textContent = sayi;
+    });
+  </script>
+</body>
+</html>
