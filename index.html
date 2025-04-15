@@ -1,17 +1,17 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Üretim Sayacı</title>
-  
-  <!-- Google Fonts - Şık ve okunabilir bir font -->
+
+  <!-- Google Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet">
 
   <style>
     body {
       font-family: 'Roboto', sans-serif;
-      background-image: url('https://armtek.com.tr/wp-content/uploads/2024/05/Ekran-goruntusu-2024-05-14-115737.png'); /* Burada fotoğrafın URL'sini ekle */
+      background-image: url('https://armtek.com.tr/wp-content/uploads/2024/05/Ekran-goruntusu-2024-05-14-115737.png');
       background-size: cover;
       background-position: center;
       margin: 0;
@@ -24,7 +24,7 @@
     }
 
     .container {
-      background: rgba(255, 255, 255, 0.8); /* Hafif opak beyaz arka plan */
+      background: rgba(255, 255, 255, 0.8);
       padding: 30px;
       border-radius: 10px;
       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
@@ -45,36 +45,30 @@
     }
 
     .count-display {
-      background-color: #f5b903; /* Yeni sarı arka plan rengi */
+      background-color: #f5b903;
       padding: 20px;
       border-radius: 10px;
       margin: 20px 0;
       font-size: 2rem;
       color: #333;
-      font-weight: bold; /* Veriler siyah ve kalın olacak şekilde */
+      font-weight: bold;
     }
 
     .message {
       background-color: red;
-      color: black;
-      font-size: 2rem;
+      color: white; /* Yazı rengi beyaz */
+      font-size: 2.3rem; /* Daha büyük yazı */
       font-weight: bold;
       padding: 20px;
       border-radius: 10px;
       margin: 20px 0;
-      animation: blink 1s infinite;
+      animation: blink 2s infinite; /* Daha yavaş yanıp sönme */
     }
 
     @keyframes blink {
-      0% {
-        opacity: 1;
-      }
-      50% {
-        opacity: 0;
-      }
-      100% {
-        opacity: 1;
-      }
+      0% { opacity: 1; }
+      50% { opacity: 0; }
+      100% { opacity: 1; }
     }
 
     .footer {
@@ -87,28 +81,30 @@
 <body>
 
   <div class="container">
+    <!-- Yanıp sönen mesaj -->
     <div id="message" class="message" style="display:none;">Yönetici mesajı buraya gelecek!</div>
 
+    <!-- Başlık -->
     <h1>Üretim Sayacı</h1>
 
-    <!-- Üretim Sayısı ve Hedef Sayısı -->
+    <!-- Üretim ve Hedef Sayısı -->
     <div class="count-display">
       <h2>Üretim Sayısı: <span id="uretim">Yükleniyor...</span></h2>
       <h2>Hedef Sayı: <span id="hedef">Yükleniyor...</span></h2>
     </div>
 
-    <!-- Footer -->
+    <!-- Alt bilgi -->
     <div class="footer">
       <p>Üretim sayacı - 2025 &copy; Armtek Elektrik</p>
     </div>
   </div>
 
-  <!-- Firebase ve JS -->
+  <!-- Firebase ve JavaScript -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-    import { getDatabase, ref, onValue, set, remove } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
+    import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
 
-    // Firebase yapılandırman
+    // Firebase ayarları
     const firebaseConfig = {
       apiKey: "AIzaSyDZsY5-5yHWVO7_eGT2CaJl_aLLMY9WWCY",
       authDomain: "armtek-v1.firebaseapp.com",
@@ -120,34 +116,28 @@
       measurementId: "G-VQYM0XR663"
     };
 
+    // Firebase'i başlat
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
+
+    // Veritabanı referansları
     const sayiRef = ref(db, 'uretimSayisi');
     const hedefRef = ref(db, 'hedefSayisi');
     const mesajRef = ref(db, 'mesaj');
 
-    // Firebase verisini al ve sayfada göster
+    // Üretim sayısını al
     onValue(sayiRef, (snapshot) => {
       const sayi = snapshot.val();
-      if (sayi !== null) {
-        document.getElementById('uretim').textContent = sayi;
-      } else {
-        console.error("Üretim Sayısı verisi yüklenemedi.");
-        document.getElementById('uretim').textContent = "Veri Yüklenemedi";
-      }
+      document.getElementById('uretim').textContent = sayi ?? "Veri Yüklenemedi";
     });
 
+    // Hedef sayısını al
     onValue(hedefRef, (snapshot) => {
       const hedef = snapshot.val();
-      if (hedef !== null) {
-        document.getElementById('hedef').textContent = hedef;
-      } else {
-        console.error("Hedef Sayısı verisi yüklenemedi.");
-        document.getElementById('hedef').textContent = "Veri Yüklenemedi";
-      }
+      document.getElementById('hedef').textContent = hedef ?? "Veri Yüklenemedi";
     });
 
-    // Mesajı al ve göster
+    // Mesajı al ve göster/gizle
     onValue(mesajRef, (snapshot) => {
       const mesaj = snapshot.val();
       const messageElement = document.getElementById('message');
