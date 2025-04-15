@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Yönetici Sayfası</title>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet">
   <style>
@@ -147,17 +147,16 @@
   const app = initializeApp(firebaseConfig);
   const db = getDatabase(app);
 
-  const correctPassword = "admin123";
+  const correctPassword = "admin123"; // Şifreni burada belirle
 
-  // DOM elemanları
   const loginArea = document.getElementById("loginArea");
   const adminPanel = document.getElementById("adminPanel");
   const passwordInput = document.getElementById("adminPassword");
 
   // Giriş Kontrolü
   function checkPassword() {
-    const password = passwordInput.value;
-    if (password === correctPassword) {
+    const input = passwordInput.value;
+    if (input === correctPassword) {
       loginArea.classList.add("hidden");
       adminPanel.classList.remove("hidden");
       loadLatestValues();
@@ -173,9 +172,10 @@
     }
   });
 
+  // Giriş butonu
   document.getElementById("loginButton").addEventListener("click", checkPassword);
 
-  // En son verileri çek
+  // En güncel verileri yükle
   async function loadLatestValues() {
     const uretimSnapshot = await get(ref(db, "uretimSayisi"));
     if (uretimSnapshot.exists()) {
@@ -201,19 +201,20 @@
     }
   });
 
-  // +1 ve -1
+  // Üretim +1
   document.getElementById("plusUretim").addEventListener("click", async () => {
     const refVal = ref(db, "uretimSayisi");
     const snap = await get(refVal);
-    let current = snap.exists() ? snap.val() : 0;
+    const current = snap.exists() ? snap.val() : 0;
     set(refVal, current + 1);
     document.getElementById("uretimSayisiInput").value = current + 1;
   });
 
+  // Üretim -1
   document.getElementById("minusUretim").addEventListener("click", async () => {
     const refVal = ref(db, "uretimSayisi");
     const snap = await get(refVal);
-    let current = snap.exists() ? snap.val() : 0;
+    const current = snap.exists() ? snap.val() : 0;
     set(refVal, current - 1);
     document.getElementById("uretimSayisiInput").value = current - 1;
   });
@@ -234,4 +235,11 @@
     }
   });
 
-  // Mesaj
+  // Mesaj Sil
+  document.getElementById("deleteMessage").addEventListener("click", () => {
+    remove(ref(db, "mesaj"));
+    document.getElementById("messageInput").value = "";
+  });
+</script>
+</body>
+</html>
