@@ -82,14 +82,16 @@
 <div class="container">
   <h1>Yönetici Sayfası</h1>
 
-  <!-- Şifre alanı -->
+  <!-- Giriş Alanı -->
   <div id="loginArea" class="input-group">
     <label for="adminPassword">Yönetici Şifresi:</label>
     <input type="password" id="adminPassword" placeholder="Şifrenizi girin">
-    <button onclick="checkPassword()">Giriş Yap</button>
+    <div class="button-group">
+      <button id="loginButton">Giriş Yap</button>
+    </div>
   </div>
 
-  <!-- Yönetim alanı -->
+  <!-- Yönetim Paneli -->
   <div id="adminPanel" class="hidden">
 
     <!-- Üretim Sayısı -->
@@ -97,9 +99,9 @@
       <label for="uretimSayisiInput">Üretim Sayısı:</label>
       <input type="number" id="uretimSayisiInput" placeholder="Üretim sayısını girin">
       <div class="button-group">
-        <button onclick="updateUretim()">Güncelle</button>
-        <button onclick="changeUretim(1)">+1</button>
-        <button onclick="changeUretim(-1)">-1</button>
+        <button id="updateUretim">Güncelle</button>
+        <button id="plusUretim">+1</button>
+        <button id="minusUretim">-1</button>
       </div>
     </div>
 
@@ -108,7 +110,7 @@
       <label for="hedefSayisiInput">Hedef Sayısı:</label>
       <input type="number" id="hedefSayisiInput" placeholder="Hedef sayısını girin">
       <div class="button-group">
-        <button onclick="updateHedef()">Güncelle</button>
+        <button id="updateHedef">Güncelle</button>
       </div>
     </div>
 
@@ -117,8 +119,8 @@
       <label for="messageInput">Mesaj:</label>
       <input type="text" id="messageInput" placeholder="Mesaj girin...">
       <div class="button-group">
-        <button onclick="sendMessage()">Mesajı Gönder</button>
-        <button onclick="deleteMessage()">Mesajı Sil</button>
+        <button id="sendMessage">Mesajı Gönder</button>
+        <button id="deleteMessage">Mesajı Sil</button>
       </div>
     </div>
   </div>
@@ -126,12 +128,11 @@
   <div class="footer">Yönetici Paneli - 2025 &copy; ArmTek</div>
 </div>
 
-<!-- Firebase -->
+<!-- Firebase ve Script -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
   import { getDatabase, ref, set, get, remove } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
 
-  // Firebase yapılandırması
   const firebaseConfig = {
     apiKey: "AIzaSyDZsY5-5yHWVO7_eGT2CaJl_aLLMY9WWCY",
     authDomain: "armtek-v1.firebaseapp.com",
@@ -146,29 +147,91 @@
   const app = initializeApp(firebaseConfig);
   const db = getDatabase(app);
 
-  const correctPassword = "admin123"; // Şifreni buradan belirleyebilirsin
+  const correctPassword = "admin123";
 
-  // Giriş kontrolü
-  window.checkPassword = function () {
-    const inputPassword = document.getElementById("adminPassword").value;
-    if (inputPassword === correctPassword) {
-      document.getElementById("loginArea").classList.add("hidden");
-      document.getElementById("adminPanel").classList.remove("hidden");
+  // DOM elemanları
+  const loginArea = document.getElementById("loginArea");
+  const adminPanel = document.getElementById("adminPanel");
+  const passwordInput = document.getElementById("adminPassword");
+
+  // Giriş Kontrolü
+  function checkPassword() {
+    const password = passwordInput.value;
+    if (password === correctPassword) {
+      loginArea.classList.add("hidden");
+      adminPanel.classList.remove("hidden");
       loadLatestValues();
     } else {
       alert("Yanlış şifre!");
     }
-  };
+  }
 
-  // ENTER tuşu ile giriş
-  document.getElementById("adminPassword").addEventListener("keydown", function (e) {
+  // Enter tuşu ile giriş
+  passwordInput.addEventListener("keydown", function (e) {
     if (e.key === "Enter") {
       checkPassword();
     }
   });
 
-  // En güncel verileri yükle
+  document.getElementById("loginButton").addEventListener("click", checkPassword);
+
+  // En son verileri çek
   async function loadLatestValues() {
-    const uretimRef = ref(db, "uretimSayisi");
-    const hedefRef = ref(db, "hedefSayisi");
-    const mesajRef = ref(db, "mesaj
+    const uretimSnapshot = await get(ref(db, "uretimSayisi"));
+    if (uretimSnapshot.exists()) {
+      document.getElementById("uretimSayisiInput").value = uretimSnapshot.val();
+    }
+
+    const hedefSnapshot = await get(ref(db, "hedefSayisi"));
+    if (hedefSnapshot.exists()) {
+      document.getElementById("hedefSayisiInput").value = hedefSnapshot.val();
+    }
+
+    const mesajSnapshot = await get(ref(db, "mesaj"));
+    if (mesajSnapshot.exists()) {
+      document.getElementById("messageInput").value = mesajSnapshot.val();
+    }
+  }
+
+  // Üretim Güncelle
+  document.getElementById("updateUretim").addEventListener("click", () => {
+    const val = parseInt(document.getElementById("uretimSayisiInput").value);
+    if (!isNaN(val)) {
+      set(ref(db, "uretimSayisi"), val);
+    }
+  });
+
+  // +1 ve -1
+  document.getElementById("plusUretim").addEventListener("click", async () => {
+    const refVal = ref(db, "uretimSayisi");
+    const snap = await get(refVal);
+    let current = snap.exists() ? snap.val() : 0;
+    set(refVal, current + 1);
+    document.getElementById("uretimSayisiInput").value = current + 1;
+  });
+
+  document.getElementById("minusUretim").addEventListener("click", async () => {
+    const refVal = ref(db, "uretimSayisi");
+    const snap = await get(refVal);
+    let current = snap.exists() ? snap.val() : 0;
+    set(refVal, current - 1);
+    document.getElementById("uretimSayisiInput").value = current - 1;
+  });
+
+  // Hedef Güncelle
+  document.getElementById("updateHedef").addEventListener("click", () => {
+    const val = parseInt(document.getElementById("hedefSayisiInput").value);
+    if (!isNaN(val)) {
+      set(ref(db, "hedefSayisi"), val);
+    }
+  });
+
+  // Mesaj Gönder
+  document.getElementById("sendMessage").addEventListener("click", () => {
+    const mesaj = document.getElementById("messageInput").value.trim();
+    if (mesaj !== "") {
+      set(ref(db, "mesaj"), mesaj);
+    }
+  });
+
+  // Mesaj
