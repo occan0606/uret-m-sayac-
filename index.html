@@ -2,7 +2,7 @@
 <html lang="tr">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>Üretim Sayacı</title>
 
   <!-- Google Fonts -->
@@ -25,21 +25,23 @@
 
     .container {
       background: rgba(255, 255, 255, 0.8);
-      padding: 30px;
+      padding: 20px;
       border-radius: 10px;
       box-shadow: 0 4px 4px rgba(0, 0, 0, 0.1);
-      width: 550px;
+      width: 100%; /* Yüzde bazlı genişlik */
+      max-width: 550px; /* Maksimum genişlik */
       text-align: center;
+      box-sizing: border-box;
     }
 
     h1 {
-      font-size: 2rem;
+      font-size: 4vw; /* Ekran boyutuna göre dinamik font boyutu */
       color: #333;
       margin-bottom: 20px;
     }
 
     h2 {
-      font-size: 1.5rem;
+      font-size: 3vw; /* Ekran boyutuna göre dinamik font boyutu */
       color: #333;
       font-weight: bold;
     }
@@ -60,8 +62,8 @@
     }
 
     .count-display h2 {
-      font-size: 6.0rem; /* %30 büyütme */
-      white-space: nowrap; /* Tek satırda kalması için */
+      font-size: 6vw; /* Ekran boyutuna göre dinamik font boyutu */
+      white-space: nowrap; /* Yazının tek satırda kalmasını sağlar */
     }
 
     .message {
@@ -73,12 +75,8 @@
       border-radius: 10px;
       margin: 20px 0;
       animation: blink 2s infinite;
-      white-space: normal; /* Mesajın taşması durumunda alt satıra geçmesini sağla */
-      word-wrap: break-word;
-      word-break: break-word;
-      overflow-wrap: break-word; /* Taşma durumunda kırılmasını sağlar */
-      max-width: 100%; /* Taşmayı engellemek için */
-      box-sizing: border-box; /* Padding ve margin'leri de hesaba katacak şekilde box modelini düzenler */
+      word-wrap: break-word; /* Uzun kelimeleri kırar */
+      overflow-wrap: break-word; /* Kelimeleri satır sonunda kırar */
     }
 
     @keyframes blink {
@@ -89,7 +87,7 @@
 
     .footer {
       margin-top: 30px;
-      font-size: 0.9rem;
+      font-size: 1vw; /* Ekran boyutuna göre dinamik font boyutu */
       color: #777;
     }
   </style>
