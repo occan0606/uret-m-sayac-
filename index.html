@@ -24,47 +24,44 @@
     }
 
     .container {
-      background: rgba(255, 255, 255, 0.85);
+      background: rgba(255, 255, 255, 0.8);
       padding: 30px;
       border-radius: 10px;
       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-      width: 450px;
+      width: 400px;
       text-align: center;
     }
 
     h1 {
-      font-size: 2.2rem;
+      font-size: 2rem;
       color: #333;
       margin-bottom: 20px;
     }
 
-    .count-display {
-      background-color: #f5b903;
-      padding: 25px;
-      border-radius: 10px;
-      margin: 20px 0;
+    h2 {
+      font-size: 1.5rem;
       color: #333;
       font-weight: bold;
     }
 
-    .count-line {
-      font-size: 3.6rem; /* %30 daha büyük */
-      display: flex;
-      justify-content: space-between;
-      gap: 10px;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
+    .count-display {
+      background-color: #f5b903;
+      padding: 20px;
+      border-radius: 10px;
+      margin: 20px 0;
+      font-size: 2rem;
+      color: #333;
+      font-weight: bold;
     }
 
     .message {
       background-color: red;
       color: white;
-      font-size: 3rem; /* Büyütüldü */
+      font-size: 2.3rem;
       font-weight: bold;
-      padding: 25px;
+      padding: 20px;
       border-radius: 10px;
-      margin: 25px 0;
+      margin: 20px 0;
       animation: blink 2s infinite;
     }
 
@@ -87,21 +84,14 @@
     <div id="message" class="message" style="display:none;">Yönetici mesajı buraya gelecek!</div>
     <h1>Üretim Sayacı</h1>
     <div class="count-display">
-      <div class="count-line">
-        <span>Üretim Sayısı:</span>
-        <span id="uretim">Yükleniyor...</span>
-      </div>
-      <div class="count-line">
-        <span>Hedef Sayı:</span>
-        <span id="hedef">Yükleniyor...</span>
-      </div>
+      <h2>Üretim Sayısı: <span id="uretim">Yükleniyor...</span></h2>
+      <h2>Hedef Sayı: <span id="hedef">Yükleniyor...</span></h2>
     </div>
     <div class="footer">
       <p>Üretim sayacı - 2025 &copy; Armtek Elektrik</p>
     </div>
   </div>
 
-  <!-- Firebase + JavaScript -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
     import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
@@ -124,57 +114,48 @@
     const hedefRef = ref(db, 'hedefSayisi');
     const mesajRef = ref(db, 'mesaj');
 
-    // Üretim değişince çalacak ses
+    // Üretim sayısı değiştiğinde 1.mp3 çal
     const playProductionSound = () => {
       const audio = new Audio('https://github.com/occan0606/uret-m-sayac-/raw/refs/heads/main/1.mp3');
       audio.play();
     };
 
-    // Yeni mesaj gelince 2.mp3 sesini 3 kere çal
+    // Yeni mesaj geldiğinde 2.mp3 sesini 3 kere çalma
     const playMessageSound = (times) => {
       const audio = new Audio('https://github.com/occan0606/uret-m-sayac-/raw/refs/heads/main/2.mp3');
       let count = 0;
       const interval = setInterval(() => {
-        audio.currentTime = 0;
         audio.play();
         count++;
         if (count === times) {
           clearInterval(interval);
         }
-      }, 1000);
+      }, 1000); // Her 1 saniyede bir ses çalar
     };
 
-    let lastMessage = "";
-
-    // Üretim sayısı
+    // Üretim sayısı verisini al
     onValue(sayiRef, (snapshot) => {
       const sayi = snapshot.val();
       document.getElementById('uretim').textContent = sayi ?? "Veri Yüklenemedi";
-      playProductionSound();
+      playProductionSound(); // Üretim sayısı değiştiğinde ses çal
     });
 
-    // Hedef sayısı
+    // Hedef sayısı verisini al
     onValue(hedefRef, (snapshot) => {
       const hedef = snapshot.val();
       document.getElementById('hedef').textContent = hedef ?? "Veri Yüklenemedi";
     });
 
-    // Mesaj takibi
+    // Mesajı al ve göster/gizle
     onValue(mesajRef, (snapshot) => {
       const mesaj = snapshot.val();
       const messageElement = document.getElementById('message');
-
       if (mesaj) {
         messageElement.style.display = 'block';
         messageElement.textContent = mesaj;
-
-        if (mesaj !== lastMessage) {
-          playMessageSound(3);
-          lastMessage = mesaj;
-        }
+        playMessageSound(3); // Yeni mesaj geldiğinde 2.mp3 3 kere çalsın
       } else {
         messageElement.style.display = 'none';
-        lastMessage = "";
       }
     });
   </script>
