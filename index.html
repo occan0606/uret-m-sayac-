@@ -54,6 +54,29 @@
       font-weight: bold; /* Veriler siyah ve kalın olacak şekilde */
     }
 
+    .message {
+      background-color: red;
+      color: black;
+      font-size: 2rem;
+      font-weight: bold;
+      padding: 20px;
+      border-radius: 10px;
+      margin: 20px 0;
+      animation: blink 1s infinite;
+    }
+
+    @keyframes blink {
+      0% {
+        opacity: 1;
+      }
+      50% {
+        opacity: 0;
+      }
+      100% {
+        opacity: 1;
+      }
+    }
+
     .footer {
       margin-top: 30px;
       font-size: 0.9rem;
@@ -64,6 +87,8 @@
 <body>
 
   <div class="container">
+    <div id="message" class="message" style="display:none;">Yönetici mesajı buraya gelecek!</div>
+
     <h1>Üretim Sayacı</h1>
 
     <!-- Üretim Sayısı ve Hedef Sayısı -->
@@ -74,14 +99,14 @@
 
     <!-- Footer -->
     <div class="footer">
-      <p>Üretim sayacı - 2025 &copy; ArmTek</p>
+      <p>Üretim sayacı - 2025 &copy; Armtekelektrik</p>
     </div>
   </div>
 
   <!-- Firebase ve JS -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-    import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
+    import { getDatabase, ref, onValue, set, remove } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
 
     // Firebase yapılandırman
     const firebaseConfig = {
@@ -99,6 +124,7 @@
     const db = getDatabase(app);
     const sayiRef = ref(db, 'uretimSayisi');
     const hedefRef = ref(db, 'hedefSayisi');
+    const mesajRef = ref(db, 'mesaj');
 
     // Firebase verisini al ve sayfada göster
     onValue(sayiRef, (snapshot) => {
@@ -118,6 +144,18 @@
       } else {
         console.error("Hedef Sayısı verisi yüklenemedi.");
         document.getElementById('hedef').textContent = "Veri Yüklenemedi";
+      }
+    });
+
+    // Mesajı al ve göster
+    onValue(mesajRef, (snapshot) => {
+      const mesaj = snapshot.val();
+      const messageElement = document.getElementById('message');
+      if (mesaj) {
+        messageElement.style.display = 'block';
+        messageElement.textContent = mesaj;
+      } else {
+        messageElement.style.display = 'none';
       }
     });
   </script>
