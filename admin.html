@@ -129,7 +129,7 @@
 <!-- Firebase -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-  import { getDatabase, ref, set, get, update, remove } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
+  import { getDatabase, ref, set, get, remove } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
 
   // Firebase yapılandırması
   const firebaseConfig = {
@@ -154,51 +154,21 @@
     if (inputPassword === correctPassword) {
       document.getElementById("loginArea").classList.add("hidden");
       document.getElementById("adminPanel").classList.remove("hidden");
+      loadLatestValues();
     } else {
       alert("Yanlış şifre!");
     }
   };
 
-  // Üretim sayısını güncelle
-  window.updateUretim = function () {
-    const value = parseInt(document.getElementById("uretimSayisiInput").value);
-    if (!isNaN(value)) {
-      set(ref(db, "uretimSayisi"), value);
+  // ENTER tuşu ile giriş
+  document.getElementById("adminPassword").addEventListener("keydown", function (e) {
+    if (e.key === "Enter") {
+      checkPassword();
     }
-  };
+  });
 
-  // Üretim sayısını artır/azalt
-  window.changeUretim = async function (amount) {
-    const refUretim = ref(db, "uretimSayisi");
-    const snapshot = await get(refUretim);
-    let current = snapshot.val() || 0;
-    current += amount;
-    set(refUretim, current);
-    document.getElementById("uretimSayisiInput").value = current;
-  };
-
-  // Hedef sayısını güncelle
-  window.updateHedef = function () {
-    const value = parseInt(document.getElementById("hedefSayisiInput").value);
-    if (!isNaN(value)) {
-      set(ref(db, "hedefSayisi"), value);
-    }
-  };
-
-  // Mesaj gönder
-  window.sendMessage = function () {
-    const message = document.getElementById("messageInput").value.trim();
-    if (message) {
-      set(ref(db, "mesaj"), message);
-      document.getElementById("messageInput").value = "";
-    }
-  };
-
-  // Mesaj sil
-  window.deleteMessage = function () {
-    remove(ref(db, "mesaj"));
-  };
-</script>
-
-</body>
-</html>
+  // En güncel verileri yükle
+  async function loadLatestValues() {
+    const uretimRef = ref(db, "uretimSayisi");
+    const hedefRef = ref(db, "hedefSayisi");
+    const mesajRef = ref(db, "mesaj
