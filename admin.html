@@ -74,15 +74,28 @@
   <div class="container">
     <h1>Yönetici Sayfası</h1>
 
-    <!-- Mesaj Gönderme -->
+    <!-- Şifre ile giriş -->
     <div class="input-group">
-      <label for="messageInput">Mesajınızı yazın:</label>
-      <input type="text" id="messageInput" placeholder="Mesaj girin...">
+      <label for="adminPassword">Yönetici Şifresi:</label>
+      <input type="password" id="adminPassword" placeholder="Şifrenizi girin...">
+    </div>
+
+    <!-- Üretim Sayısı ve Hedef Sayısı Güncelleme -->
+    <div class="input-group">
+      <label for="uretimSayisiInput">Üretim Sayısını Girin:</label>
+      <input type="number" id="uretimSayisiInput" placeholder="Üretim sayısını girin...">
+    </div>
+
+    <div class="input-group">
+      <label for="hedefSayisiInput">Hedef Sayısını Girin:</label>
+      <input type="number" id="hedefSayisiInput" placeholder="Hedef sayısını girin...">
     </div>
 
     <div class="button-group">
       <button id="sendMessage">Mesajı Gönder</button>
       <button id="deleteMessage">Mesajı Sil</button>
+      <button id="updateProduction">Üretim Sayısını Güncelle</button>
+      <button id="updateTarget">Hedef Sayısını Güncelle</button>
     </div>
 
     <div class="footer">
@@ -110,6 +123,21 @@
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
     const mesajRef = ref(db, 'mesaj');
+    const urtemSayisiRef = ref(db, 'uretimSayisi');
+    const hedefSayisiRef = ref(db, 'hedefSayisi');
+
+    // Şifre doğrulama
+    const correctPassword = 'admin123';  // Bu şifreyi değiştirebilirsiniz
+
+    // Yönetici sayfasında şifre kontrolü
+    document.getElementById('adminPassword').addEventListener('change', (e) => {
+      const password = e.target.value;
+      if (password === correctPassword) {
+        alert('Şifre doğru, yönetici paneline hoş geldiniz!');
+      } else {
+        alert('Yanlış şifre!');
+      }
+    });
 
     // Mesajı Gönderme
     document.getElementById('sendMessage').addEventListener('click', () => {
@@ -122,6 +150,22 @@
     // Mesajı Silme
     document.getElementById('deleteMessage').addEventListener('click', () => {
       remove(mesajRef);
+    });
+
+    // Üretim Sayısını Güncelleme
+    document.getElementById('updateProduction').addEventListener('click', () => {
+      const urtemSayisi = document.getElementById('uretimSayisiInput').value;
+      if (urtemSayisi) {
+        set(urtemSayisiRef, urtemSayisi);
+      }
+    });
+
+    // Hedef Sayısını Güncelleme
+    document.getElementById('updateTarget').addEventListener('click', () => {
+      const hedefSayisi = document.getElementById('hedefSayisiInput').value;
+      if (hedefSayisi) {
+        set(hedefSayisiRef, hedefSayisi);
+      }
     });
   </script>
 </body>
