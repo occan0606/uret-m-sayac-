@@ -21,11 +21,17 @@
   <!-- Yönetim Paneli -->
   <div id="panel">
     <h2>Üretim Sayısı: <span id="uretim">Yükleniyor...</span></h2>
+    <h2>Hedef Sayısı: <span id="hedef">Yükleniyor...</span></h2>
+    
     <button id="artir">+</button>
     <button id="azalt">-</button><br><br>
 
-    <input type="number" id="manualInput" placeholder="Yeni sayı gir">
-    <button id="guncelle">Güncelle</button>
+    <input type="number" id="manualInput" placeholder="Yeni üretim sayısı gir">
+    <button id="guncelle">Güncelle</button><br><br>
+
+    <!-- Hedef Sayısını Güncelle -->
+    <input type="number" id="hedefInput" placeholder="Yeni hedef sayısı gir">
+    <button id="hedefGuncelle">Hedefi Güncelle</button>
   </div>
 
   <!-- Firebase ve JS -->
@@ -33,7 +39,7 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
     import { getDatabase, ref, onValue, set } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
 
-    // Firebase yapılandırman (senin projen)
+    // Firebase yapılandırman
     const firebaseConfig = {
       apiKey: "AIzaSyDZsY5-5yHWVO7_eGT2CaJl_aLLMY9WWCY",
       authDomain: "armtek-v1.firebaseapp.com",
@@ -48,13 +54,15 @@
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
     const sayiRef = ref(db, 'uretimSayisi');
+    const hedefRef = ref(db, 'hedefSayisi');
 
     let currentValue = 0;
+    let hedefValue = 0;
 
     // Şifre kontrolü
     function kontrolEt() {
       const girilen = document.getElementById('sifreInput').value;
-      const dogruSifre = "1234"; // ← Şifren buraya (değiştirebilirsin)
+      const dogruSifre = "1234"; // Şifren buraya
 
       if (girilen === dogruSifre) {
         document.getElementById('sifreSor').style.display = "none";
@@ -65,13 +73,14 @@
       }
     }
 
-    // Fonksiyonu global hale getir (önemli!)
     window.kontrolEt = kontrolEt;
 
     // Firebase verisi okuma ve yazma
     function veriyiBaslat() {
       const uretimEl = document.getElementById('uretim');
+      const hedefEl = document.getElementById('hedef');
       const input = document.getElementById('manualInput');
+      const hedefInput = document.getElementById('hedefInput');
 
       onValue(sayiRef, (snapshot) => {
         const sayi = snapshot.val();
@@ -79,18 +88,35 @@
         uretimEl.textContent = sayi;
       });
 
+      onValue(hedefRef, (snapshot) => {
+        const hedef = snapshot.val();
+        hedefValue = hedef;
+        hedefEl.textContent = hedef;
+      });
+
+      // Üretim sayısını artır
       document.getElementById('artir').onclick = () => {
         set(sayiRef, currentValue + 1);
       };
 
+      // Üretim sayısını azalt
       document.getElementById('azalt').onclick = () => {
         set(sayiRef, currentValue - 1);
       };
 
+      // Üretim sayısını manuel güncelle
       document.getElementById('guncelle').onclick = () => {
         const yeniSayi = parseInt(input.value);
         if (!isNaN(yeniSayi)) {
           set(sayiRef, yeniSayi);
+        }
+      };
+
+      // Hedef sayısını güncelle
+      document.getElementById('hedefGuncelle').onclick = () => {
+        const yeniHedef = parseInt(hedefInput.value);
+        if (!isNaN(yeniHedef)) {
+          set(hedefRef, yeniHedef);
         }
       };
     }
