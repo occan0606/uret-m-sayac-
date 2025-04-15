@@ -37,16 +37,18 @@
 
     h2 {
       font-size: 1.5rem;
-      color: #555;
+      color: #333;
+      font-weight: bold;
     }
 
     .count-display {
-      background: #e9ecef;
+      background: rgb(234, 179, 179); /* Yeni gri arka plan rengi */
       padding: 20px;
       border-radius: 10px;
       margin: 20px 0;
       font-size: 2rem;
       color: #333;
+      font-weight: bold; /* Veriler siyah ve kalın olacak şekilde */
     }
 
     .buttons {
@@ -129,51 +131,3 @@
       apiKey: "AIzaSyDZsY5-5yHWVO7_eGT2CaJl_aLLMY9WWCY",
       authDomain: "armtek-v1.firebaseapp.com",
       databaseURL: "https://armtek-v1-default-rtdb.firebaseio.com",
-      projectId: "armtek-v1",
-      storageBucket: "armtek-v1.firebasestorage.app",
-      messagingSenderId: "1080834554968",
-      appId: "1:1080834554968:web:a3bdd4985910fad663de2d",
-      measurementId: "G-VQYM0XR663"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const db = getDatabase(app);
-    const sayiRef = ref(db, 'uretimSayisi');
-    const hedefRef = ref(db, 'hedefSayisi');
-
-    let currentValue = 0;
-
-    // Firebase verisini al ve sayfada göster
-    onValue(sayiRef, (snapshot) => {
-      const sayi = snapshot.val();
-      document.getElementById('uretim').textContent = sayi;
-      currentValue = sayi;
-    });
-
-    onValue(hedefRef, (snapshot) => {
-      const hedef = snapshot.val();
-      document.getElementById('hedef').textContent = hedef;
-    });
-
-    // Üretim sayısını artır
-    document.getElementById('artir').onclick = () => {
-      set(sayiRef, currentValue + 1);
-    };
-
-    // Üretim sayısını azalt
-    document.getElementById('azalt').onclick = () => {
-      set(sayiRef, currentValue - 1);
-    };
-
-    // Üretim sayısını manuel güncelle
-    document.getElementById('guncelle').onclick = () => {
-      const yeniSayi = parseInt(document.getElementById('manualInput').value);
-      if (!isNaN(yeniSayi)) {
-        set(sayiRef, yeniSayi);
-      } else {
-        document.getElementById('error-message').textContent = "Lütfen geçerli bir sayı girin!";
-      }
-    };
-  </script>
-</body>
-</html>
