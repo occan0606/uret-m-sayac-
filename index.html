@@ -73,6 +73,12 @@
       border-radius: 10px;
       margin: 20px 0;
       animation: blink 2s infinite;
+      white-space: normal; /* Mesajın taşması durumunda alt satıra geçmesini sağla */
+      word-wrap: break-word;
+      word-break: break-word;
+      overflow-wrap: break-word; /* Taşma durumunda kırılmasını sağlar */
+      max-width: 100%; /* Taşmayı engellemek için */
+      box-sizing: border-box; /* Padding ve margin'leri de hesaba katacak şekilde box modelini düzenler */
     }
 
     @keyframes blink {
