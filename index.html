@@ -27,8 +27,8 @@
       background: rgba(255, 255, 255, 0.8);
       padding: 30px;
       border-radius: 10px;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-      width: 400px;
+      box-shadow: 0 4px 4px rgba(0, 0, 0, 0.1);
+      width: 550px;
       text-align: center;
     }
 
@@ -52,12 +52,22 @@
       font-size: 2rem;
       color: #333;
       font-weight: bold;
+      width: 100%; /* Tam genişlik */
+      max-width: 100%; /* Ekranda taşma olmasın */
+      box-sizing: border-box;
+      white-space: nowrap; /* Yazının tek satırda kalmasını sağlar */
+      overflow: hidden; /* Taşan yazıyı gizler */
+    }
+
+    .count-display h2 {
+      font-size: 6.0rem; /* %30 büyütme */
+      white-space: nowrap; /* Tek satırda kalması için */
     }
 
     .message {
       background-color: red;
       color: white;
-      font-size: 2.3rem;
+      font-size: 3.3rem;
       font-weight: bold;
       padding: 20px;
       border-radius: 10px;
@@ -84,8 +94,8 @@
     <div id="message" class="message" style="display:none;">Yönetici mesajı buraya gelecek!</div>
     <h1>Üretim Sayacı</h1>
     <div class="count-display">
-      <h2>Üretim Sayısı: <span id="uretim">Yükleniyor...</span></h2>
-      <h2>Hedef Sayı: <span id="hedef">Yükleniyor...</span></h2>
+      <h2>Üretim : <span id="uretim">Yükleniyor...</span></h2>
+      <h2>Hedef : <span id="hedef">Yükleniyor...</span></h2>
     </div>
     <div class="footer">
       <p>Üretim sayacı - 2025 &copy; Armtek Elektrik</p>
