@@ -4,20 +4,16 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Yönetici Sayfası</title>
-  
-  <!-- Google Fonts - Şık ve okunabilir bir font -->
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet">
-
   <style>
     body {
       font-family: 'Roboto', sans-serif;
-      margin: 0;
-      padding: 0;
+      background-color: #f4f7fc;
       display: flex;
       justify-content: center;
       align-items: center;
       height: 100vh;
-      background-color: #f4f7fc;
+      margin: 0;
     }
 
     .container {
@@ -30,28 +26,36 @@
     }
 
     h1 {
-      font-size: 2rem;
-      color: #333;
       margin-bottom: 20px;
     }
 
     .input-group {
-      margin-bottom: 20px;
+      margin-bottom: 15px;
+      text-align: left;
+    }
+
+    .input-group label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
     }
 
     .input-group input {
       width: 100%;
-      padding: 10px;
+      padding: 8px;
       font-size: 1rem;
-      margin: 5px 0;
       border: 1px solid #ccc;
       border-radius: 5px;
     }
 
+    .button-group {
+      margin: 10px 0;
+    }
+
     .button-group button {
-      padding: 10px 20px;
+      padding: 10px 15px;
+      margin: 5px;
       font-size: 1rem;
-      margin: 10px;
       background-color: #f5b903;
       border: none;
       border-radius: 5px;
@@ -67,106 +71,134 @@
       font-size: 0.9rem;
       color: #777;
     }
+
+    .hidden {
+      display: none;
+    }
   </style>
 </head>
 <body>
 
-  <div class="container">
-    <h1>Yönetici Sayfası</h1>
+<div class="container">
+  <h1>Yönetici Sayfası</h1>
 
-    <!-- Şifre ile giriş -->
+  <!-- Şifre alanı -->
+  <div id="loginArea" class="input-group">
+    <label for="adminPassword">Yönetici Şifresi:</label>
+    <input type="password" id="adminPassword" placeholder="Şifrenizi girin">
+    <button onclick="checkPassword()">Giriş Yap</button>
+  </div>
+
+  <!-- Yönetim alanı -->
+  <div id="adminPanel" class="hidden">
+
+    <!-- Üretim Sayısı -->
     <div class="input-group">
-      <label for="adminPassword">Yönetici Şifresi:</label>
-      <input type="password" id="adminPassword" placeholder="Şifrenizi girin...">
+      <label for="uretimSayisiInput">Üretim Sayısı:</label>
+      <input type="number" id="uretimSayisiInput" placeholder="Üretim sayısını girin">
+      <div class="button-group">
+        <button onclick="updateUretim()">Güncelle</button>
+        <button onclick="changeUretim(1)">+1</button>
+        <button onclick="changeUretim(-1)">-1</button>
+      </div>
     </div>
 
-    <!-- Üretim Sayısı ve Hedef Sayısı Güncelleme -->
+    <!-- Hedef Sayısı -->
     <div class="input-group">
-      <label for="uretimSayisiInput">Üretim Sayısını Girin:</label>
-      <input type="number" id="uretimSayisiInput" placeholder="Üretim sayısını girin...">
+      <label for="hedefSayisiInput">Hedef Sayısı:</label>
+      <input type="number" id="hedefSayisiInput" placeholder="Hedef sayısını girin">
+      <div class="button-group">
+        <button onclick="updateHedef()">Güncelle</button>
+      </div>
     </div>
 
+    <!-- Mesaj Gönderme -->
     <div class="input-group">
-      <label for="hedefSayisiInput">Hedef Sayısını Girin:</label>
-      <input type="number" id="hedefSayisiInput" placeholder="Hedef sayısını girin...">
-    </div>
-
-    <div class="button-group">
-      <button id="sendMessage">Mesajı Gönder</button>
-      <button id="deleteMessage">Mesajı Sil</button>
-      <button id="updateProduction">Üretim Sayısını Güncelle</button>
-      <button id="updateTarget">Hedef Sayısını Güncelle</button>
-    </div>
-
-    <div class="footer">
-      <p>Yönetici Paneli - 2025 &copy; ArmTek</p>
+      <label for="messageInput">Mesaj:</label>
+      <input type="text" id="messageInput" placeholder="Mesaj girin...">
+      <div class="button-group">
+        <button onclick="sendMessage()">Mesajı Gönder</button>
+        <button onclick="deleteMessage()">Mesajı Sil</button>
+      </div>
     </div>
   </div>
 
-  <!-- Firebase ve JS -->
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-    import { getDatabase, ref, set, remove } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
+  <div class="footer">Yönetici Paneli - 2025 &copy; ArmTek</div>
+</div>
 
-    // Firebase yapılandırman
-    const firebaseConfig = {
-      apiKey: "AIzaSyDZsY5-5yHWVO7_eGT2CaJl_aLLMY9WWCY",
-      authDomain: "armtek-v1.firebaseapp.com",
-      databaseURL: "https://armtek-v1-default-rtdb.firebaseio.com",
-      projectId: "armtek-v1",
-      storageBucket: "armtek-v1.firebasestorage.app",
-      messagingSenderId: "1080834554968",
-      appId: "1:1080834554968:web:a3bdd4985910fad663de2d",
-      measurementId: "G-VQYM0XR663"
-    };
+<!-- Firebase -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+  import { getDatabase, ref, set, get, update, remove } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
 
-    const app = initializeApp(firebaseConfig);
-    const db = getDatabase(app);
-    const mesajRef = ref(db, 'mesaj');
-    const urtemSayisiRef = ref(db, 'uretimSayisi');
-    const hedefSayisiRef = ref(db, 'hedefSayisi');
+  // Firebase yapılandırması
+  const firebaseConfig = {
+    apiKey: "AIzaSyDZsY5-5yHWVO7_eGT2CaJl_aLLMY9WWCY",
+    authDomain: "armtek-v1.firebaseapp.com",
+    databaseURL: "https://armtek-v1-default-rtdb.firebaseio.com",
+    projectId: "armtek-v1",
+    storageBucket: "armtek-v1.firebasestorage.app",
+    messagingSenderId: "1080834554968",
+    appId: "1:1080834554968:web:a3bdd4985910fad663de2d",
+    measurementId: "G-VQYM0XR663"
+  };
 
-    // Şifre doğrulama
-    const correctPassword = 'admin123';  // Bu şifreyi değiştirebilirsiniz
+  const app = initializeApp(firebaseConfig);
+  const db = getDatabase(app);
 
-    // Yönetici sayfasında şifre kontrolü
-    document.getElementById('adminPassword').addEventListener('change', (e) => {
-      const password = e.target.value;
-      if (password === correctPassword) {
-        alert('Şifre doğru, yönetici paneline hoş geldiniz!');
-      } else {
-        alert('Yanlış şifre!');
-      }
-    });
+  const correctPassword = "admin123"; // Şifreni buradan belirleyebilirsin
 
-    // Mesajı Gönderme
-    document.getElementById('sendMessage').addEventListener('click', () => {
-      const message = document.getElementById('messageInput').value;
-      if (message) {
-        set(mesajRef, message);
-      }
-    });
+  // Giriş kontrolü
+  window.checkPassword = function () {
+    const inputPassword = document.getElementById("adminPassword").value;
+    if (inputPassword === correctPassword) {
+      document.getElementById("loginArea").classList.add("hidden");
+      document.getElementById("adminPanel").classList.remove("hidden");
+    } else {
+      alert("Yanlış şifre!");
+    }
+  };
 
-    // Mesajı Silme
-    document.getElementById('deleteMessage').addEventListener('click', () => {
-      remove(mesajRef);
-    });
+  // Üretim sayısını güncelle
+  window.updateUretim = function () {
+    const value = parseInt(document.getElementById("uretimSayisiInput").value);
+    if (!isNaN(value)) {
+      set(ref(db, "uretimSayisi"), value);
+    }
+  };
 
-    // Üretim Sayısını Güncelleme
-    document.getElementById('updateProduction').addEventListener('click', () => {
-      const urtemSayisi = document.getElementById('uretimSayisiInput').value;
-      if (urtemSayisi) {
-        set(urtemSayisiRef, urtemSayisi);
-      }
-    });
+  // Üretim sayısını artır/azalt
+  window.changeUretim = async function (amount) {
+    const refUretim = ref(db, "uretimSayisi");
+    const snapshot = await get(refUretim);
+    let current = snapshot.val() || 0;
+    current += amount;
+    set(refUretim, current);
+    document.getElementById("uretimSayisiInput").value = current;
+  };
 
-    // Hedef Sayısını Güncelleme
-    document.getElementById('updateTarget').addEventListener('click', () => {
-      const hedefSayisi = document.getElementById('hedefSayisiInput').value;
-      if (hedefSayisi) {
-        set(hedefSayisiRef, hedefSayisi);
-      }
-    });
-  </script>
+  // Hedef sayısını güncelle
+  window.updateHedef = function () {
+    const value = parseInt(document.getElementById("hedefSayisiInput").value);
+    if (!isNaN(value)) {
+      set(ref(db, "hedefSayisi"), value);
+    }
+  };
+
+  // Mesaj gönder
+  window.sendMessage = function () {
+    const message = document.getElementById("messageInput").value.trim();
+    if (message) {
+      set(ref(db, "mesaj"), message);
+      document.getElementById("messageInput").value = "";
+    }
+  };
+
+  // Mesaj sil
+  window.deleteMessage = function () {
+    remove(ref(db, "mesaj"));
+  };
+</script>
+
 </body>
 </html>
