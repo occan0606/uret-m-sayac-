@@ -1,43 +1,99 @@
 <!DOCTYPE html>
-<html>
+<html lang="tr">
 <head>
   <meta charset="UTF-8">
-  <title>Yönetici Paneli</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Yönetici Sayfası</title>
+  
+  <!-- Google Fonts - Şık ve okunabilir bir font -->
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+
   <style>
-    #panel { display: none; }
+    body {
+      font-family: 'Roboto', sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background-color: #f4f7fc;
+    }
+
+    .container {
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      width: 400px;
+      text-align: center;
+    }
+
+    h1 {
+      font-size: 2rem;
+      color: #333;
+      margin-bottom: 20px;
+    }
+
+    .input-group {
+      margin-bottom: 20px;
+    }
+
+    .input-group input {
+      width: 100%;
+      padding: 10px;
+      font-size: 1rem;
+      margin: 5px 0;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+
+    .button-group button {
+      padding: 10px 20px;
+      font-size: 1rem;
+      margin: 10px;
+      background-color: #f5b903;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .button-group button:hover {
+      background-color: #e4a302;
+    }
+
+    .footer {
+      margin-top: 30px;
+      font-size: 0.9rem;
+      color: #777;
+    }
   </style>
 </head>
 <body>
-  <h1>Yönetici Paneli</h1>
 
-  <!-- Şifre Giriş Alanı -->
-  <div id="sifreSor">
-    <p>Lütfen şifreyi girin:</p>
-    <input type="password" id="sifreInput" placeholder="Şifre">
-    <button onclick="kontrolEt()">Giriş Yap</button>
-    <p id="uyari" style="color:red;"></p>
-  </div>
+  <div class="container">
+    <h1>Yönetici Sayfası</h1>
 
-  <!-- Yönetim Paneli -->
-  <div id="panel">
-    <h2>Üretim Sayısı: <span id="uretim">Yükleniyor...</span></h2>
-    <h2>Hedef Sayısı: <span id="hedef">Yükleniyor...</span></h2>
-    
-    <button id="artir">+</button>
-    <button id="azalt">-</button><br><br>
+    <!-- Mesaj Gönderme -->
+    <div class="input-group">
+      <label for="messageInput">Mesajınızı yazın:</label>
+      <input type="text" id="messageInput" placeholder="Mesaj girin...">
+    </div>
 
-    <input type="number" id="manualInput" placeholder="Yeni üretim sayısı gir">
-    <button id="guncelle">Güncelle</button><br><br>
+    <div class="button-group">
+      <button id="sendMessage">Mesajı Gönder</button>
+      <button id="deleteMessage">Mesajı Sil</button>
+    </div>
 
-    <!-- Hedef Sayısını Güncelle -->
-    <input type="number" id="hedefInput" placeholder="Yeni hedef sayısı gir">
-    <button id="hedefGuncelle">Hedefi Güncelle</button>
+    <div class="footer">
+      <p>Yönetici Paneli - 2025 &copy; ArmTek</p>
+    </div>
   </div>
 
   <!-- Firebase ve JS -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-    import { getDatabase, ref, onValue, set } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
+    import { getDatabase, ref, set, remove } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
 
     // Firebase yapılandırman
     const firebaseConfig = {
@@ -53,73 +109,20 @@
 
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
-    const sayiRef = ref(db, 'uretimSayisi');
-    const hedefRef = ref(db, 'hedefSayisi');
+    const mesajRef = ref(db, 'mesaj');
 
-    let currentValue = 0;
-    let hedefValue = 0;
-
-    // Şifre kontrolü
-    function kontrolEt() {
-      const girilen = document.getElementById('sifreInput').value;
-      const dogruSifre = "1234"; // Şifren buraya
-
-      if (girilen === dogruSifre) {
-        document.getElementById('sifreSor').style.display = "none";
-        document.getElementById('panel').style.display = "block";
-        veriyiBaslat();
-      } else {
-        document.getElementById('uyari').textContent = "Hatalı şifre!";
+    // Mesajı Gönderme
+    document.getElementById('sendMessage').addEventListener('click', () => {
+      const message = document.getElementById('messageInput').value;
+      if (message) {
+        set(mesajRef, message);
       }
-    }
+    });
 
-    window.kontrolEt = kontrolEt;
-
-    // Firebase verisi okuma ve yazma
-    function veriyiBaslat() {
-      const uretimEl = document.getElementById('uretim');
-      const hedefEl = document.getElementById('hedef');
-      const input = document.getElementById('manualInput');
-      const hedefInput = document.getElementById('hedefInput');
-
-      onValue(sayiRef, (snapshot) => {
-        const sayi = snapshot.val();
-        currentValue = sayi;
-        uretimEl.textContent = sayi;
-      });
-
-      onValue(hedefRef, (snapshot) => {
-        const hedef = snapshot.val();
-        hedefValue = hedef;
-        hedefEl.textContent = hedef;
-      });
-
-      // Üretim sayısını artır
-      document.getElementById('artir').onclick = () => {
-        set(sayiRef, currentValue + 1);
-      };
-
-      // Üretim sayısını azalt
-      document.getElementById('azalt').onclick = () => {
-        set(sayiRef, currentValue - 1);
-      };
-
-      // Üretim sayısını manuel güncelle
-      document.getElementById('guncelle').onclick = () => {
-        const yeniSayi = parseInt(input.value);
-        if (!isNaN(yeniSayi)) {
-          set(sayiRef, yeniSayi);
-        }
-      };
-
-      // Hedef sayısını güncelle
-      document.getElementById('hedefGuncelle').onclick = () => {
-        const yeniHedef = parseInt(hedefInput.value);
-        if (!isNaN(yeniHedef)) {
-          set(hedefRef, yeniHedef);
-        }
-      };
-    }
+    // Mesajı Silme
+    document.getElementById('deleteMessage').addEventListener('click', () => {
+      remove(mesajRef);
+    });
   </script>
 </body>
 </html>
