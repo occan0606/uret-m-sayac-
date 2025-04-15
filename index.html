@@ -11,17 +11,20 @@
   <style>
     body {
       font-family: 'Roboto', sans-serif;
-      background-color: #f4f7fc;
+      background-image: url('https://armtek.com.tr/wp-content/uploads/2024/05/Ekran-goruntusu-2024-05-14-115737.png'); /* Burada fotoğrafın URL'sini ekle */
+      background-size: cover;
+      background-position: center;
       margin: 0;
       padding: 0;
       display: flex;
       justify-content: center;
       align-items: center;
       height: 100vh;
+      color: white;
     }
 
     .container {
-      background: white;
+      background: rgba(255, 255, 255, 0.8); /* Hafif opak beyaz arka plan */
       padding: 30px;
       border-radius: 10px;
       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
@@ -42,47 +45,13 @@
     }
 
     .count-display {
-      background: rgb(234, 179, 179); /* Yeni gri arka plan rengi */
+      background-color: #f5b903; /* Yeni sarı arka plan rengi */
       padding: 20px;
       border-radius: 10px;
       margin: 20px 0;
       font-size: 2rem;
       color: #333;
       font-weight: bold; /* Veriler siyah ve kalın olacak şekilde */
-    }
-
-    .buttons {
-      margin-top: 30px;
-    }
-
-    button {
-      background-color: #4caf50;
-      color: white;
-      border: none;
-      padding: 12px 20px;
-      font-size: 1.2rem;
-      margin: 5px;
-      border-radius: 5px;
-      cursor: pointer;
-      transition: background-color 0.3s ease;
-    }
-
-    button:hover {
-      background-color: #45a049;
-    }
-
-    input {
-      padding: 10px;
-      margin: 10px 0;
-      border: 2px solid #ccc;
-      border-radius: 5px;
-      font-size: 1rem;
-      width: 100%;
-    }
-
-    .error-message {
-      color: red;
-      font-size: 1rem;
     }
 
     .footer {
@@ -103,18 +72,6 @@
       <h2>Hedef Sayısı: <span id="hedef">Yükleniyor...</span></h2>
     </div>
 
-    <!-- Firebase ve JS -->
-    <div class="buttons">
-      <button id="artir">+</button>
-      <button id="azalt">-</button>
-    </div>
-
-    <!-- Manuel Güncelleme Alanı -->
-    <input type="number" id="manualInput" placeholder="Yeni üretim sayısı gir">
-    <button id="guncelle">Güncelle</button>
-
-    <div class="error-message" id="error-message"></div>
-
     <!-- Footer -->
     <div class="footer">
       <p>Üretim sayacı - 2025 &copy; ArmTek</p>
@@ -124,7 +81,7 @@
   <!-- Firebase ve JS -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-    import { getDatabase, ref, onValue, set } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
+    import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
 
     // Firebase yapılandırman
     const firebaseConfig = {
@@ -143,14 +100,11 @@
     const sayiRef = ref(db, 'uretimSayisi');
     const hedefRef = ref(db, 'hedefSayisi');
 
-    let currentValue = 0;
-
     // Firebase verisini al ve sayfada göster
     onValue(sayiRef, (snapshot) => {
       const sayi = snapshot.val();
       if (sayi !== null) {
         document.getElementById('uretim').textContent = sayi;
-        currentValue = sayi;
       } else {
         console.error("Üretim Sayısı verisi yüklenemedi.");
         document.getElementById('uretim').textContent = "Veri Yüklenemedi";
@@ -166,26 +120,6 @@
         document.getElementById('hedef').textContent = "Veri Yüklenemedi";
       }
     });
-
-    // Üretim sayısını artır
-    document.getElementById('artir').onclick = () => {
-      set(sayiRef, currentValue + 1);
-    };
-
-    // Üretim sayısını azalt
-    document.getElementById('azalt').onclick = () => {
-      set(sayiRef, currentValue - 1);
-    };
-
-    // Üretim sayısını manuel güncelle
-    document.getElementById('guncelle').onclick = () => {
-      const yeniSayi = parseInt(document.getElementById('manualInput').value);
-      if (!isNaN(yeniSayi)) {
-        set(sayiRef, yeniSayi);
-      } else {
-        document.getElementById('error-message').textContent = "Lütfen geçerli bir sayı girin!";
-      }
-    };
   </script>
 </body>
 </html>
