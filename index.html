@@ -114,17 +114,30 @@
     const hedefRef = ref(db, 'hedefSayisi');
     const mesajRef = ref(db, 'mesaj');
 
-    // Üretim sayısı değiştiğinde sesi çal
-    const playSound = () => {
+    // Üretim sayısı değiştiğinde 1.mp3 çal
+    const playProductionSound = () => {
       const audio = new Audio('https://github.com/occan0606/uret-m-sayac-/raw/refs/heads/main/1.mp3');
       audio.play();
+    };
+
+    // Yeni mesaj geldiğinde 2.mp3 sesini 3 kere çalma
+    const playMessageSound = (times) => {
+      const audio = new Audio('https://github.com/occan0606/uret-m-sayac-/raw/refs/heads/main/2.mp3');
+      let count = 0;
+      const interval = setInterval(() => {
+        audio.play();
+        count++;
+        if (count === times) {
+          clearInterval(interval);
+        }
+      }, 1000); // Her 1 saniyede bir ses çalar
     };
 
     // Üretim sayısı verisini al
     onValue(sayiRef, (snapshot) => {
       const sayi = snapshot.val();
       document.getElementById('uretim').textContent = sayi ?? "Veri Yüklenemedi";
-      playSound(); // Ses çal
+      playProductionSound(); // Üretim sayısı değiştiğinde ses çal
     });
 
     // Hedef sayısı verisini al
@@ -140,6 +153,7 @@
       if (mesaj) {
         messageElement.style.display = 'block';
         messageElement.textContent = mesaj;
+        playMessageSound(3); // Yeni mesaj geldiğinde 2.mp3 3 kere çalsın
       } else {
         messageElement.style.display = 'none';
       }
