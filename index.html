@@ -9,6 +9,13 @@
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet">
 
   <style>
+    * {
+      user-select: none;
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+    }
+
     body {
       font-family: 'Roboto', sans-serif;
       background-image: url('https://armtek.com.tr/wp-content/uploads/2024/05/Ekran-goruntusu-2024-05-14-115737.png');
@@ -117,6 +124,7 @@
     </div>
   </div>
 
+  <!-- Firebase + Sayaç Script -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
     import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
@@ -161,7 +169,6 @@
       el.style.transform = 'scale(1)';
       const parentWidth = parent.offsetWidth;
       const elWidth = el.offsetWidth;
-
       if (elWidth > parentWidth) {
         const scale = parentWidth / elWidth;
         el.style.transform = `scale(${scale})`;
@@ -205,6 +212,28 @@
 
     updateDateTime();
     setInterval(updateDateTime, 1000);
+  </script>
+
+  <!-- Kopyalama ve İnceleme Engelleyici Script -->
+  <script>
+    document.addEventListener('contextmenu', function (e) {
+      e.preventDefault();
+    });
+
+    document.addEventListener('keydown', function (e) {
+      if (
+        (e.ctrlKey && e.key.toLowerCase() === 'c') ||  // Ctrl+C
+        (e.ctrlKey && e.key.toLowerCase() === 'u') ||  // Ctrl+U
+        (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === 'i') || // Ctrl+Shift+I
+        e.key === 'F12'
+      ) {
+        e.preventDefault();
+      }
+    });
+
+    document.addEventListener('copy', function (e) {
+      e.preventDefault();
+    });
   </script>
 </body>
 </html>
